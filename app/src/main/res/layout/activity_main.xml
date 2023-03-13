@@ -47,7 +47,7 @@
             android:layout_height="100dp"
             android:layout_gravity="fill"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             android:foreground="@drawable/baemin" />
 
         <ImageButton
@@ -55,7 +55,7 @@
             android:layout_height="100dp"
             android:layout_gravity="fill"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             android:foreground="@drawable/yogiyo" />
 
         <ImageButton
@@ -63,7 +63,7 @@
             android:layout_height="100dp"
             android:layout_gravity="fill"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             android:foreground="@drawable/coupangeats" />
 
 
@@ -72,7 +72,7 @@
             android:layout_height="100dp"
             android:layout_gravity="fill"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             android:foreground="@drawable/ddaeng" />
 
         <ImageButton
@@ -80,8 +80,7 @@
             android:layout_height="100dp"
             android:layout_gravity="fill"
             android:layout_columnWeight="1"
-            android:layout_margin="10dp"
-            android:background="@drawable/round"
+            android:layout_margin="15dp"
             android:foreground="@drawable/coupang" />
 
         <ImageButton
@@ -89,9 +88,9 @@
             android:layout_height="100dp"
             android:layout_columnWeight="1"
             android:layout_gravity="fill"
-            android:layout_margin="10dp"
+            android:layout_margin="15dp"
             android:foreground="@drawable/gmarket" />
-<!--        버튼 둥글게 해결해야 함-->
+        <!--        버튼 둥글게 해결해야 함-->
 
     </GridLayout>
 
