@@ -27,31 +27,6 @@ class TestActivity : AppCompatActivity() {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-//        val action: Int = MotionEventCompat.getActionMasked(event)
-//
-//        return when (action) {
-//            MotionEvent.ACTION_DOWN -> {
-//                Log.d("gesture", "Action was DOWN")
-//                true
-//            }
-//            MotionEvent.ACTION_MOVE -> {
-//                Log.d("gesture", "Action was MOVE")
-//                true
-//            }
-//            MotionEvent.ACTION_UP -> {
-//                Log.d("gesture", "Action was UP")
-//                true
-//            }
-//            MotionEvent.ACTION_CANCEL -> {
-//                Log.d("gesture", "Action was CANCEL")
-//                true
-//            }
-//            MotionEvent.ACTION_OUTSIDE -> {
-//                Log.d("gesture", "Movement occurred outside bounds of current screen element")
-//                true
-//            }
-//            else -> super.onTouchEvent(event)
-//        }
         if (event != null) {
             gestureDetector.onTouchEvent(event)
         }
