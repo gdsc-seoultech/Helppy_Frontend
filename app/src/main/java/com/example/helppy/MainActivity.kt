@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.helppy.databinding.ActivityMainBinding
-import com.example.helppy.utils.MyAccessibility
+import com.example.helppy.utils.ImageProcessor
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         alertDialog()
 
         // 스크린리더 on
-        MyAccessibility()
+        ImageProcessor()
 
         // 각 앱 누를 경우 앱으로 이동
         binding.bae.setOnClickListener { btnOnClick("bae") }
