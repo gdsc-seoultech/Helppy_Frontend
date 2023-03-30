@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <FrameLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="ImReader"
+            android:textSize="30sp"
+            android:textStyle="bold|italic" />
+    </FrameLayout>
+
+    <GridLayout
+        android:id="@+id/appGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:columnCount="3"
+        android:orientation="horizontal"
+        android:rowCount="5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header">
+
+        <ImageButton
+            android:id="@+id/bae"
+            android:layout_height="100dp"
+            android:layout_gravity="fill"
+            android:layout_columnWeight="1"
+            android:layout_margin="15dp"
+            android:foreground="@drawable/baemin" />
+
+        <ImageButton
+            android:id="@+id/yogi"
+            android:layout_height="100dp"
+            android:layout_gravity="fill"
+            android:layout_columnWeight="1"
+            android:layout_margin="15dp"
+            android:foreground="@drawable/yogiyo" />
+
+        <ImageButton
+            android:id="@+id/eats"
+            android:layout_height="100dp"
+            android:layout_gravity="fill"
+            android:layout_columnWeight="1"
+            android:layout_margin="15dp"
+            android:foreground="@drawable/coupangeats" />
+
+
+        <ImageButton
+            android:id="@+id/ddaeng"
+            android:layout_height="100dp"
+            android:layout_gravity="fill"
+            android:layout_columnWeight="1"
+            android:layout_margin="15dp"
+            android:foreground="@drawable/ddaeng" />
+
+        <ImageButton
+            android:id="@+id/coupang"
+            android:layout_height="100dp"
+            android:layout_gravity="fill"
+            android:layout_columnWeight="1"
+            android:layout_margin="15dp"
+            android:foreground="@drawable/coupang" />
+
+        <ImageButton
+            android:id="@+id/gmarket"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill"
+            android:layout_margin="15dp"
+            android:foreground="@drawable/gmarket" />
+        <!--        버튼 둥글게 해결해야 함-->
+
+    </GridLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/yellow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottombar"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
