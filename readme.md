@@ -6,7 +6,7 @@ ImReader is the solution to solve the 10th goal of the [UN's SDGs](https://sdgs.
 
 The Voice Asthma program is especially helpful for blind people to use smartphones. However, some images cannot be read and simply described as "detailed images." Because of this, they have more difficulty in acquiring information than others.
 
-To solve this problem, We developed a service called ImReader! If voice assistant program that we developed ourselves recognizes an image, it does not inform it as a "detailed image" and extracts the text from the image by inserting the image into the Deep Learning model(OCR). This text is then told to the user using the TTS API. Through this process, there is an advantage that the user can access not only the plain text but also the text in the image.
+To solve this problem, we developed a service called ImReader! If voice assistant program that we developed ourselves recognizes an image, it does not inform it as a "detailed image" instead extracts the text from the image by inserting the image into the Deep Learning model(OCR). This text is then told to the user using the TTS API. Through this process, there is an advantage that the user can access not only the plain text but also the text in the image.
 
 <br>
 
