@@ -47,6 +47,10 @@ We really tried to complete the service, but unfortunately we didn't finish it o
 ## ☘️ Used Technology & Architecture
 ![image](https://user-images.githubusercontent.com/90444862/229029705-ae0ee800-e795-49bd-9076-832e4920d1be.png)
 
+1. The client implemented as Kotlin sends the image information to base64. 
+2. The server then uses the virtual machine in GCP to run the OCR model with that information. 
+3. When the returned result value is sent back to the client.
+4. The client hears the text to the user through the TTS API.
 
 <br>
 
