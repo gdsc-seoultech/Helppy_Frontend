@@ -1,11 +1,17 @@
 package com.example.helppy.utils
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Rect
+import android.speech.tts.TextToSpeech
 import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import com.example.helppy.TestActivity
+import android.view.*
+import android.view.accessibility.AccessibilityEvent
+import android.widget.ImageView
+import android.widget.TextView
+import com.example.helppy.databinding.ActivityMainBinding
+import java.io.IOException
+import java.util.*
 import kotlin.math.abs
 
 // TODO: Single Tap: Recognize text at the focused location
@@ -14,7 +20,48 @@ import kotlin.math.abs
 // TODO: Swipe left: move focus to another item on the left
 // TODO: Two-finger swipe up and down: scroll the screen
 
-class GestureListener(private val activity: TestActivity): GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+class GestureListener(
+    context: Context,
+    private val view: View,
+//    private val onCancel: () -> Unit
+) : GestureDetector.SimpleOnGestureListener() {
+
+    private lateinit var binding: ActivityMainBinding
+    private val gestureDetector: GestureDetector = GestureDetector(context, this)
+    private var focusedView: View? = null
+    private var isReadingText = false
+    private var isAskingToReadImageText = false
+
+    private lateinit var tts: TextToSpeech
+
+//    val tts = TextToSpeech(context) { status ->
+//        if (status == TextToSpeech.SUCCESS) {
+//            tts.language = Locale.KOREAN
+//        }
+
+    private var lastVolumeUpTimestamp: Long = 0
+    private var lastVolumeDownTimestamp: Long = 0
+
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun initGestureDetector(view: View) {
+        view.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+        }
+    }
+
+//    // 화면에 손가락이 닿았을 때, 제스쳐 시작을 알림
+//    override fun onDown(event: MotionEvent): Boolean {
+//        Log.d("gesture", "onDown() 호출")
+////        focusedView = event.view.findViewAtPosition(event.x.toInt(), event.y.toInt())
+////
+////        if (focusedView != null) {
+////            focusedView!!.requestFocus()
+////            isReadingText = focusedView is TextView
+////            isAskingToReadImageText = focusedView is ImageView
+////        }
+//        return true
+//    }
 
     // 화면 한 번 탭
     override fun onSingleTapUp(p0: MotionEvent): Boolean {
@@ -25,12 +72,17 @@ class GestureListener(private val activity: TestActivity): GestureDetector.OnGes
     // 두 번 터치 이벤트의 어떤 단계이 있는지
     override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
         Log.d("gesture", "onSingleTapConfirmed() 호출")
-//        val focusedView = activity.myFocusedView
-        activity.updateFocusedView(findTouchedView(e.x, e.y))
+        focusedView = findViewAtPosition(e.x, e.y)
+        focusedView?.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
         return true
     }
 
-    override fun onFling(downEvent: MotionEvent, upEvent: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+    override fun onFling(
+        downEvent: MotionEvent,
+        upEvent: MotionEvent,
+        velocityX: Float,
+        velocityY: Float
+    ): Boolean {
         Log.d("gesture", "onFling() 호출")
 
         val swipeThreshold = 100
@@ -42,10 +94,24 @@ class GestureListener(private val activity: TestActivity): GestureDetector.OnGes
         val deltaX = upEvent.x - downEvent.x
         if (abs(deltaX) > abs(deltaY)) {
             if (abs(deltaX) > swipeThreshold && abs(velocityX) > swipeVelocityThreshold) {
-                if (deltaX > 0) {
-                    onSwipeRight()
-                } else {
-                    onSwipeLeft()
+                val prevView = focusedView?.focusSearch(View.FOCUS_LEFT)
+                if (prevView != null) {
+                    prevView.requestFocus()
+                    focusedView = prevView
+                    isReadingText = focusedView is TextView
+                    isAskingToReadImageText = focusedView is ImageView
+
+
+                    return true
+                }
+            } else {
+                val nextView = focusedView?.focusSearch(View.FOCUS_RIGHT)
+                if (nextView != null) {
+                    nextView.requestFocus()
+                    focusedView = nextView
+                    isReadingText = focusedView is TextView
+                    isAskingToReadImageText = focusedView is ImageView
+                    return true
                 }
             }
             result = true
@@ -56,116 +122,111 @@ class GestureListener(private val activity: TestActivity): GestureDetector.OnGes
     // 두 번 탭 이벤트
     override fun onDoubleTap(p0: MotionEvent): Boolean {
         Log.d("gesture", "onDoubleTap() 호출")
-        return true
-    }
-    // 아래, 위 이동 이벤트를 포함한 두 번 탭 체스처
-    override fun onDoubleTapEvent(p0: MotionEvent): Boolean {
-        Log.d("gesture", "onDoubleTapEvent() 호출")
-        return true
-    }
 
-//    override fun onTwoFingerScroll(distanceX: Float, distanceY: Float): Boolean {
-//        val scrollView = activity.findViewById<ScrollView>(R.id.myScrollView)
-//        scrollView.scrollBy(distanceX.toInt(), distanceY.toInt())
-//        return true
-//    }
-
-
-
-//    private fun getFocusedView(): View {
-//        return focusedView
-//    }
-
-
-    private fun View.findViewAt(x: Float, y: Float): View? {
-        val location = IntArray(2)
-        getLocationOnScreen(location)
-
-        val screenX = location[0] + x
-        val screenY = location[1] + y
-
-        val root = rootView
-//        val view = root.hitTest(screenX, screenY)
-        val view = root.findFocus()
-        return if (view != null && view != root) {
-            view
-        } else { null }
-    }
-
-    private fun findTouchedView(x: Float, y: Float): View? {
-        val root = activity.findViewById<View>(android.R.id.content)
-        // 화면의 특정 위치에서 View를 가져옴
-        val touchedView = root.findViewAt(x, y)
-//        val touchedView = root.
-        return touchedView?.takeIf { it.isFocusable }
-    }
-
-    private fun onSwipeRight(): Boolean {
-        Log.d("gesture", "onSwipeRight() 호출")
-        val nextView = getNextView(activity.myFocusedView)
-        nextView?.requestFocus()
-        return true
-    }
-    private fun onSwipeLeft(): Boolean {
-        Log.d("gesture", "onSwipeLeft() 호출")
-        val lastView = getLastView(activity.myFocusedView)
-        lastView?.requestFocus()
-        return true
-    }
-    private fun getNextView(currentView: View?): View? {
-        if (currentView == null) {
-            return null
+        if (focusedView != null) {
+            focusedView!!.performClick()
+            return true
         }
-        val parentView = currentView.parent as? ViewGroup ?: return null
-        val index = parentView.indexOfChild(currentView)
-        val nextIndex = if (index + 1 < parentView.childCount) index + 1 else index
+        return false
 
-        return parentView.getChildAt(nextIndex)
     }
 
-    private fun getLastView(currentView: View?): View? {
-        if (currentView == null) {
-            return null
+    fun isReadingText(): Boolean {
+        return isReadingText
+    }
+
+    fun isAskingToReadImageText(): Boolean {
+        return isAskingToReadImageText
+    }
+
+    private fun speak(text: String, context: Context) {
+        tts = TextToSpeech(context) { status ->
+            if (status != TextToSpeech.ERROR) {
+                tts.language = Locale.getDefault()
+                tts.speak(
+                    text,
+                    TextToSpeech.QUEUE_FLUSH,
+                    null,
+                    null
+                ) // QUEUE_FLUSH: 새 텍스트를 말하기 전에 음성 대기열을 지움
+            }
         }
-        val parentView = currentView.parent as? ViewGroup ?: return null
-        val index = parentView.indexOfChild(currentView)
-        val lastIndex = if (index - 1 >= 0) index - 1 else index
-
-        return parentView.getChildAt(lastIndex)
     }
-
-
-
-//     Not used
-
-    // 일정한 속도로 스크롤
-    override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-        Log.d("gesture", "onScroll() 호출")
-
-//        val focusedView = getFocusedView()
-//        val scrollThreshold = 100
 //
-//        if (e1 != null && e2 != null) {
-//            val deltaY = e2.y - e1.y
-//            if (abs(deltaY) > scrollThreshold) {
-//                val scrollAmount = deltaY.toInt()
-//                focusedView.scrollBy(0, scrollAmount)
-//            }
-//        }
-        return true
+//    fun onDestroy() {
+//        tts.shutdown()
+//    }
+
+    fun onVolumeKeyPressed(keyCode: Int, focusedView: ImageView) {
+        val currentTimestamp = System.currentTimeMillis()
+
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            if (currentTimestamp - lastVolumeUpTimestamp < DOUBLE_PRESS_INTERVAL) {
+                imageProcessor(focusedView)
+            }
+            lastVolumeUpTimestamp = currentTimestamp
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            if (currentTimestamp - lastVolumeDownTimestamp < DOUBLE_PRESS_INTERVAL) {
+                speak("Canceled", view.context)
+            }
+            lastVolumeDownTimestamp = currentTimestamp
+        }
     }
-    // 화면에 손가락이 닿았을 때, 제스쳐 시작을 알림
-    override fun onDown(p0: MotionEvent): Boolean {
-        Log.d("gesture", "onDown() 호출")
-        return true
+
+    companion object {
+        private const val DOUBLE_PRESS_INTERVAL = 300L
     }
-    // 화면이 눌렸다 떼어지는 경우, 제스처의 시작과 끝을 알림
-    override fun onShowPress(p0: MotionEvent) {
-        Log.d("gesture", "onShowPress() 호출")
+
+
+    private fun findViewAtPosition(
+        x: Float,
+        y: Float,
+        viewGroup: ViewGroup? = view as? ViewGroup
+    ): View? {
+        if (viewGroup == null) return null
+
+        for (i in 0 until viewGroup.childCount) {
+            val child = viewGroup.getChildAt(i)
+            val rect = Rect()
+            child.getHitRect(rect)
+
+            if (rect.contains(x.toInt(), y.toInt())) {
+                return if (child is ViewGroup) {
+                    findViewAtPosition(x - child.left, y - child.top, child) ?: child
+                } else {
+                    child
+                }
+            }
+        }
+
+        return null
+
     }
-    // 길게 탭
-    override fun onLongPress(p0: MotionEvent) {
-        Log.d("gesture", "onLongPress() 호출")
+
+
+    private fun imageProcessor(view: ImageView) {
+
+        // 이미지 받아오기
+//        val view = focusedView
+
+        val myImageProcessor = ImageProcessor()
+        val base64Image = myImageProcessor.imageEncoder(view)
+
+        if (base64Image != null) {
+            myImageProcessor.sendRequest(base64Image, object : ImageProcessor.ResponseCallback {
+                override fun onSuccess(responseData: String) {
+                    Log.d("Response", responseData)
+                    val response_data = myImageProcessor.UnicodeToHangul(responseData)
+                    Log.d("text", response_data)
+                }
+
+                override fun onFailure(exception: IOException) {
+                    Log.e("Error", exception.message ?: "Unknown error")
+                }
+            })
+        } else {
+            Log.e("Error", "Failed to encode the image")
+        }
     }
 
 

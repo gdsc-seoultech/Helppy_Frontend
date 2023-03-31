@@ -82,7 +82,6 @@ class ImageProcessor() {
 
     fun UnicodeToHangul(responseString: String): String {
         // responseData에서 유니코드 찾기
-        val word = mutableListOf<String>()
         val currentWords = mutableListOf<String>()
         val wordList = mutableListOf<String>()
         var unicodeList = ""
